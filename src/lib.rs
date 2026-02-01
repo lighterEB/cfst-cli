@@ -1,70 +1,17 @@
 use clap::{Args, Parser, ValueEnum};
 use std::{fs, path::PathBuf};
 use base64::{Engine as _, engine::general_purpose};
-
-#[derive(Parser)]
-#[command(author, version, about = "CF IP 提取工具")]
-pub struct Cli {
-    /// 1. 运营商
-    #[arg(short, long, value_enum, num_args=1..)]
-    pub isp: Vec<Isp>,
-
-    /// 2. 获取IP个数
-    #[arg(short, long, default_value_t = 10)]
-    pub count: usize,
-
-    /// 3.写入文件路径
-    #[arg(short, long, value_name = "OUTPUT", default_value = "result.txt")]
-    pub output: PathBuf,
-
-    #[command(flatten)]
-    pub vless: VlessOptions,
-}
-
-#[derive(Args, Debug)]
-pub struct VlessOptions {
-    /// Vless UUID
-    #[arg(long, default_value = "5a0d12ef-6cb7-49bd-b2aa-feb8c395aa9a")]
-    pub uuid: String,
-
-    /// 端口
-    #[arg(short, long, default_value_t = 443)]
-    pub port: u16,
-
-    /// SNI (Server Name Indication)
-    #[arg(long, default_value = "custom.com")]
-    pub sni: String,
-
-    /// Host
-    #[arg(long, default_value = "custom.com")]
-    pub host: String,
-
-    /// Path (WS路径)
-    #[arg(long, default_value = "/custom.com?ed=2560")]
-    pub path: String,
-}
-
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
-pub enum Isp {
-    Ct,   // 中国电信
-    Cmcc, // 中国移动
-    Cu,   // 中国联通
-}
-
-impl Isp {
-    fn as_str(&self) -> &str {
-        match self {
-            Isp::Cmcc => "cmcc",
-            Isp::Ct => "ct",
-            Isp::Cu => "cu",
-        }
-    }
-}
+use crate::cli::args::{Cli, VlessOptions};
+use crate::domain::isp::Isp as DomainIsp;
+use crate::domain::isp::Isp;
+pub mod domain;
+pub mod cli;
 
 pub fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>>{
     let mut res = String::new();
     for item in &cli.isp {
-        match fetch_info(item.as_str(), cli.count) {
+        let isp:DomainIsp = (*item).into();
+        match fetch_info(isp, cli.count) {
             Ok(content) => {
                 res.push_str(&content);
                 res.push_str("\n");
@@ -121,8 +68,13 @@ fn save_config(config: &str, path: &PathBuf) ->Result<(), std::io::Error> {
     Ok(())
 }
 
-fn fetch_info(isp: &str, count: usize) -> Result<String, Box<dyn std::error::Error>> {
-    let url = format!("https://cf.090227.xyz/{isp}?ips={count}");
+fn fetch_info(isp: Isp, count: usize) -> Result<String, Box<dyn std::error::Error>> {
+    let isp_str = match isp {
+        Isp::Cu => "cu",
+        Isp::Cmcc => "cmcc",
+        Isp::Ct => "ct"
+    };
+    let url = format!("https://cf.090227.xyz/{isp_str}?ips={count}");
     let response = reqwest::blocking::get(url)?.text()?;
     Ok(response)
 }
