@@ -1,5 +1,5 @@
 use clap::{Args, Parser, ValueEnum};
-use std::{fs, path::PathBuf};
+use std::{path::PathBuf};
 use crate::domain::isp as domain;
 
 #[derive(Parser)]
@@ -26,6 +26,7 @@ pub enum Isp {
     Ct,   // 中国电信
     Cmcc, // 中国移动
     Cu,   // 中国联通
+    Cn,   // 多线/三网
 }
 
 
@@ -58,6 +59,7 @@ impl From<Isp> for domain::Isp {
             Isp::Ct => domain::Isp::Ct,
             Isp::Cmcc => domain::Isp::Cmcc,
             Isp::Cu => domain::Isp::Cu,
+            Isp::Cn => domain::Isp::Cn,
         }
     }
 }
