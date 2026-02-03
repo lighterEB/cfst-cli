@@ -9,9 +9,9 @@ use std::collections::HashSet;
 
 pub trait IpSource {
     fn supported_isps(&self) -> &[Isp];
-    
+
     fn fetch(&self) -> Result<Vec<IpInfo>, DomainError>;
-    
+
     fn name(&self) -> &'static str;
 }
 
@@ -22,27 +22,28 @@ pub struct AggregatedSource {
 impl AggregatedSource {
     pub fn new() -> Self {
         Self {
-        sources: vec![
-            Box::new(Cf090227Source::new()),
-            Box::new(WetestSource::new()),
-        ],
+            sources: vec![
+                Box::new(Cf090227Source::new()),
+                Box::new(WetestSource::new()),
+            ],
         }
     }
-    
+
     pub fn fetch(&self, isps: &[Isp], count: usize) -> Vec<IpInfo> {
         let mut all_ips: Vec<IpInfo> = Vec::new();
-        
+
         for source in &self.sources {
             match source.fetch() {
                 Ok(ips) => all_ips.extend(ips),
                 Err(e) => eprintln!("[{}] {}", source.name(), e),
             }
         }
-        
+
         let mut result = Vec::new();
         for isp in isps {
             let mut seen = HashSet::new();
-            let filtered: Vec<_> = all_ips.iter()
+            let filtered: Vec<_> = all_ips
+                .iter()
                 .filter(|info| &info.isp == isp && seen.insert(info.ip.clone()))
                 .take(count)
                 .cloned()

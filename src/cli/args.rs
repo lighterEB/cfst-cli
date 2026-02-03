@@ -1,6 +1,6 @@
-use clap::{Args, Parser, ValueEnum};
-use std::{path::PathBuf};
 use crate::domain::isp as domain;
+use clap::{Args, Parser, ValueEnum};
+use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(author, version, about = "CF IP 提取工具")]
@@ -28,7 +28,6 @@ pub enum Isp {
     Cu,   // 中国联通
     Cn,   // 多线/三网
 }
-
 
 #[derive(Args, Debug)]
 pub struct VlessOptions {
