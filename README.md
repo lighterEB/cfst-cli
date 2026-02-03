@@ -10,7 +10,7 @@
 ## 功能特性
 
 - 支持多数据源聚合（cf.090227.xyz、wetest.vip）
-- 支持四大运营商线路（电信/移动/联通/三网）
+- 支持三大运营商线路（电信/移动/联通）及三网优化线路
 - 自动去重，确保 IP 不重复
 - 自动生成 VLESS+WebSocket+TLS 配置
 - 支持自定义 VLESS 参数（UUID、端口、SNI 等）
@@ -37,12 +37,12 @@ cargo build --release
 
 ```bash
 # 获取移动和电信各 10 个优选 IP
-cfst -i cmcc -i ct
+cfst -i cmcc ct
 
 # 获取联通 20 个优选 IP
 cfst -i cu -c 20
 
-# 获取三网/多线优选 IP
+# 获取三网优化线路的 IP（适用于电信/移动/联通均有优化的线路）
 cfst -i cn -c 10
 
 # 指定输出文件
@@ -64,7 +64,7 @@ cfst -i ct -c 10 \
 
 ```bash
 # 获取电信、移动、联通、三网各 5 个 IP
-cfst -i ct -i cmcc -i cu -i cn -c 5
+cfst -i ct cmcc cu cn -c 5
 ```
 
 ### 查看帮助
@@ -77,7 +77,7 @@ cfst --help
 
 | 参数 | 简写 | 说明 | 默认值 |
 |------|------|------|--------|
-| `--isp <ISP>` | `-i` | 运营商线路（可多选） | 必填 |
+| `--isp <ISP>...` | `-i` | 线路类型（支持多选，空格分隔） | 必填 |
 | `--count <N>` | `-c` | 每个线路获取 IP 数量 | 10 |
 | `--output <PATH>` | `-o` | 输出文件路径 | result.txt |
 | `--uuid <UUID>` | | VLESS UUID | 默认 UUID |
@@ -86,14 +86,14 @@ cfst --help
 | `--host <HOST>` | | Host 头 | custom.com |
 | `--path <PATH>` | | WebSocket 路径 | /custom.com?ed=2560 |
 
-### ISP 可选值
+### 线路可选值
 
 | 值 | 说明 |
 |----|------|
 | `ct` | 中国电信 |
 | `cmcc` | 中国移动 |
 | `cu` | 中国联通 |
-| `cn` | 三网/多线 |
+| `cn` | 三网优化（融合三大运营商，适用于多线路优化的 IP） |
 
 ## 项目结构
 
