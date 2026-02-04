@@ -59,17 +59,3 @@ impl IpSource for Cf090227Source {
         "cf.090227.xyz"
     }
 }
-
-pub fn parse_cf090227_response(response: &str) -> Vec<IpInfo> {
-    response
-        .lines()
-        .filter_map(|line| {
-            let ip = line.split('#').next()?.trim().to_string();
-            if ip.is_empty() {
-                None
-            } else {
-                Some(IpInfo::new(ip, Isp::Cmcc, None))
-            }
-        })
-        .collect()
-}

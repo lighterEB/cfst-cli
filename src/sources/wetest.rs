@@ -27,7 +27,7 @@ impl WetestSource {
         }
     }
 
-    pub fn line_to_isp(line: &str) -> Option<Isp> {
+    fn line_to_isp(line: &str) -> Option<Isp> {
         match line.to_lowercase().as_str() {
             "cm" => Some(Isp::Cmcc),
             "ct" => Some(Isp::Ct),
@@ -69,18 +69,4 @@ impl IpSource for WetestSource {
     fn name(&self) -> &'static str {
         "wetest.vip"
     }
-}
-
-pub fn parse_wetest_response(response: &str) -> Result<Vec<IpInfo>, serde_json::Error> {
-    let response: WetestResponse = serde_json::from_str(response)?;
-
-    let mut ips = Vec::new();
-    for (_, ip_list) in response.info {
-        for item in ip_list {
-            if let Some(isp) = WetestSource::line_to_isp(&item.line) {
-                ips.push(IpInfo::new(item.ip, isp, None));
-            }
-        }
-    }
-    Ok(ips)
 }

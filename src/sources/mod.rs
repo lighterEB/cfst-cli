@@ -2,8 +2,8 @@ mod cf090227;
 mod uouin;
 mod wetest;
 
-pub use cf090227::{parse_cf090227_response, Cf090227Source};
-pub use wetest::{parse_wetest_response, WetestIpInfo, WetestResponse, WetestSource};
+pub use cf090227::Cf090227Source;
+pub use wetest::WetestSource;
 
 use crate::{
     domain::{error::DomainError, isp::Isp, model::IpInfo},
@@ -27,8 +27,8 @@ impl AggregatedSource {
     pub fn new() -> Self {
         Self {
             sources: vec![
-                // Box::new(Cf090227Source::new()),
-                // Box::new(WetestSource::new()),
+                Box::new(Cf090227Source::new()),
+                Box::new(WetestSource::new()),
                 Box::new(UouinSource::new()),
             ],
         }
