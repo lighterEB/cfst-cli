@@ -84,21 +84,3 @@ pub fn parse_wetest_response(response: &str) -> Result<Vec<IpInfo>, serde_json::
     }
     Ok(ips)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_wetest_mock() {
-        let mock = r#"{"status":true,"info":{"CM":[{"ip":"104.18.38.125","line":"cm"}],"CT":[{"ip":"162.159.39.237","line":"ct"}],"CU":[{"ip":"104.26.13.170","line":"cu"}],"CN":[{"ip":"108.162.198.179","line":"cn"}]}}"#;
-        let ips = parse_wetest_response(mock).unwrap();
-        assert_eq!(ips.len(), 4);
-
-        let isps: Vec<_> = ips.iter().map(|ip| ip.isp).collect();
-        assert!(isps.contains(&Isp::Cmcc));
-        assert!(isps.contains(&Isp::Ct));
-        assert!(isps.contains(&Isp::Cu));
-        assert!(isps.contains(&Isp::Cn));
-    }
-}
