@@ -10,9 +10,10 @@ reqwest = { version = "0.13.1", default-features = false, features = [
     "rustls",        # TLS 支持
 ] }
 clap = { version = "4.0", features = ["derive"] }
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.149"
+serde = { version = "1.0.228", features = ["derive"] }
 base64 = "0.22.1"
+md5 = "0.8.0"
 
 [profile.release]
 strip = true          # 移除符号表和调试信息
