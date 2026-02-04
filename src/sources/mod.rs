@@ -2,8 +2,8 @@ mod cf090227;
 mod uouin;
 mod wetest;
 
-pub use cf090227::{Cf090227Source, parse_cf090227_response};
-pub use wetest::{WetestIpInfo, WetestResponse, WetestSource, parse_wetest_response};
+pub use cf090227::{parse_cf090227_response, Cf090227Source};
+pub use wetest::{parse_wetest_response, WetestIpInfo, WetestResponse, WetestSource};
 
 use crate::{
     domain::{error::DomainError, isp::Isp, model::IpInfo},

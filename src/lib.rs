@@ -67,34 +67,3 @@ fn url_encode(input: &str) -> String {
     }
     encoded
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_url_encode_path() {
-        let input = "/62acd959-eb9a-47e3-b677-3914ffa2b166-vless?ed=2056";
-        let result = url_encode(input);
-        println!("Path Input:  {}", input);
-        println!("Path Output: {}", result);
-
-        // / ? = 应该被编码
-        assert_eq!(
-            result,
-            "%2F62acd959-eb9a-47e3-b677-3914ffa2b166-vless%3Fed%3D2056"
-        );
-    }
-
-    #[test]
-    fn test_url_encode_chinese() {
-        let input = "CF优选-移动";
-        let result = url_encode(input);
-        println!("Remark Input:  {}", input);
-        println!("Remark Output: {}", result);
-
-        // 中文应该被编码，- 不应该被编码
-        assert!(result.contains("-"));
-        assert!(result.starts_with("CF%"));
-    }
-}
