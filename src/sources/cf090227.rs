@@ -59,3 +59,31 @@ impl IpSource for Cf090227Source {
         "cf.090227.xyz"
     }
 }
+
+pub fn parse_cf090227_response(response: &str) -> Vec<IpInfo> {
+    response
+        .lines()
+        .filter_map(|line| {
+            let ip = line.split('#').next()?.trim().to_string();
+            if ip.is_empty() {
+                None
+            } else {
+                Some(IpInfo::new(ip, Isp::Cmcc, None))
+            }
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_cf090227_mock() {
+        let mock = "104.19.60.223#CF优选-移动\n104.19.54.135#CF优选-移动";
+        let ips = parse_cf090227_response(mock);
+        assert_eq!(ips.len(), 2);
+        assert_eq!(ips[0].ip, "104.19.60.223");
+        assert_eq!(ips[1].ip, "104.19.54.135");
+    }
+}

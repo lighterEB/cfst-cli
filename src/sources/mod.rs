@@ -1,8 +1,8 @@
 mod cf090227;
 mod wetest;
 
-pub use cf090227::Cf090227Source;
-pub use wetest::WetestSource;
+pub use cf090227::{parse_cf090227_response, Cf090227Source};
+pub use wetest::{parse_wetest_response, WetestIpInfo, WetestResponse, WetestSource};
 
 use crate::domain::{error::DomainError, isp::Isp, model::IpInfo};
 use std::collections::HashSet;
