@@ -24,23 +24,45 @@ pub struct AggregatedSource {
 }
 
 impl AggregatedSource {
-    pub fn new() -> Self {
-        Self {
-            sources: vec![
-                Box::new(Cf090227Source::new()),
-                Box::new(WetestSource::new()),
-                Box::new(UouinSource::new()),
-            ],
+    pub fn new(selected_sources: &[crate::cli::args::ApiSource]) -> Self {
+        let mut sources: Vec<Box<dyn IpSource>> = Vec::new();
+
+        if selected_sources.is_empty() {
+            // 如果用户未选择，默认加载全部
+            sources.push(Box::new(Cf090227Source::new()));
+            sources.push(Box::new(WetestSource::new()));
+            sources.push(Box::new(UouinSource::new()));
+        } else {
+            // 否则按需实例化
+            for src in selected_sources {
+                match src {
+                    crate::cli::args::ApiSource::Cf090227 => {
+                        sources.push(Box::new(Cf090227Source::new()))
+                    }
+                    crate::cli::args::ApiSource::Wetest => {
+                        sources.push(Box::new(WetestSource::new()))
+                    }
+                    crate::cli::args::ApiSource::Uouin => {
+                        sources.push(Box::new(UouinSource::new()))
+                    }
+                }
+            }
         }
+
+        Self { sources }
     }
 
-    pub fn fetch(&self, isps: &[Isp], count: usize) -> Vec<IpInfo> {
+    pub fn fetch(&self, isps: &[Isp], count: usize, quiet: bool) -> Vec<IpInfo> {
         let mut all_ips: Vec<IpInfo> = Vec::new();
 
         for source in &self.sources {
             match source.fetch() {
                 Ok(ips) => all_ips.extend(ips),
-                Err(e) => eprintln!("[{}] {}", source.name(), e),
+                Err(e) => {
+                    if !quiet {
+                        eprintln!("[{}] {}", source.name(), e)
+                    }
+                }
             }
         }
 

@@ -2,7 +2,7 @@ use crate::cli::args::{Cli, VlessOptions};
 use crate::domain::isp::Isp as DomainIsp;
 use crate::domain::model::IpInfo;
 use crate::sources::AggregatedSource;
-use base64::{engine::general_purpose, Engine as _};
+use base64::{Engine as _, engine::general_purpose};
 use std::{fs, path::PathBuf};
 pub mod cli;
 pub mod domain;
@@ -11,11 +11,13 @@ pub mod sources;
 pub fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     let isps: Vec<DomainIsp> = cli.isp.iter().map(|i| (*i).into()).collect();
 
-    let source = AggregatedSource::new();
-    let ip_infos = source.fetch(&isps, cli.count);
+    let source = AggregatedSource::new(&cli.source);
+    let ip_infos = source.fetch(&isps, cli.count, cli.quiet);
 
     if ip_infos.is_empty() {
-        eprintln!("未获取到任何 IP 信息");
+        if !cli.quiet {
+            eprintln!("未获取到任何 IP 信息");
+        }
         return Ok(());
     }
 
@@ -28,7 +30,9 @@ pub fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
     let encoded = general_purpose::STANDARD.encode(&config);
     save_config(&encoded, &cli.output)?;
 
-    println!("节点信息已写入文件：{:?}", cli.output);
+    if !cli.quiet {
+        println!("节点信息已写入文件：{:?}", cli.output);
+    }
     Ok(())
 }
 

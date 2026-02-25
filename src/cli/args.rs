@@ -17,8 +17,23 @@ pub struct Cli {
     #[arg(short, long, value_name = "OUTPUT", default_value = "result.txt")]
     pub output: PathBuf,
 
+    /// 4. 选择数据源 (支持多选，不填则默认使用全部)
+    #[arg(short = 's', long, value_enum)]
+    pub source: Vec<ApiSource>,
+
+    /// 5. 静默模式 (用于服务器定时任务，不输出多余提示信息)
+    #[arg(short, long, env = "CFST_QUIET")]
+    pub quiet: bool,
+
     #[command(flatten)]
     pub vless: VlessOptions,
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
+pub enum ApiSource {
+    Cf090227,
+    Wetest,
+    Uouin,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
