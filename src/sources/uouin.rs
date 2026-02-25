@@ -80,7 +80,6 @@ impl IpSource for UouinSource {
         let response =
             reqwest::blocking::get(url).map_err(|e| DomainError::FetchFailed(e.to_string()))?;
         let text = response.text().unwrap();
-        println!("{}", text);
         let parsed: UouinResponse =
             serde_json::from_str(&text).map_err(|e| DomainError::ParseFailed(e.to_string()))?;
         if !parsed.statu.as_bytes().eq("true".as_bytes()) {
